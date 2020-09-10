@@ -2,13 +2,13 @@
   <div id="app" class="container">
     <app-header :quote-count="quotes.length" :max-quotes="maxQuotes"></app-header>
     <app-new-quote @quoteAdded="newQuote"></app-new-quote>
-    <app-quote-grid :quotes="quotes" @quoteDeleted="deleteQuote"></app-quote-grid>
     <div class="row">
       <div class="col-sm-12 text-center">
-        <div class="alert alert-info">Info: Click on a Quote to delete it!
+        <div v-if="notice.length != 0" class="alert alert-info">Notice: {{notice}}</div>
+        <div class="alert alert-info" v-if="quotes.length==10">Notice: Click on a Quote to delete it!</div>
       </div>
     </div>
-  </div>
+    <app-quote-grid :quotes="quotes" @quoteDeleted="deleteQuote"></app-quote-grid>
   </div>
 </template>
 
@@ -21,13 +21,11 @@ export default {
   data: function (){
     return{
       quotes:[
-        'Just a Quote to see something',
-        'Hello World',
-        'Hello World',
-        'Hello World',
-        'Just a Quote to see something'
+        'Albert Einstein: Logic will get you from A to B. Imagination will take you everywhere.',
+        'A man is not old as long as he is seeking something. A man is not old until regrets take the place of dreams.',
       ],
-      maxQuotes: 10
+      maxQuotes: 10,
+      notice: ""
     }
   },
   components: {
@@ -36,12 +34,21 @@ export default {
     appHeader: Header
   },methods:{
     newQuote(quote){
-      if (this.quotes.length >= this.maxQuotes){
-        // 這部分比較特殊，因為alter是沒有回傳值，只會開啟跳窗
-        // 等於他只是用return跳出func並且利用他執行一個expression
-        return alert('Please delete Quotes first')
+      // if (this.quotes.length >= this.maxQuotes){
+      //   // 這部分比較特殊，因為alter是沒有回傳值，只會開啟跳窗
+      //   // 等於他只是用return跳出func並且利用他執行一個expression
+      //   return this.notice = 'Please delete Quotes first'
+      // }
+      if (this.quotes.length < this.maxQuotes){
+        if(quote.length!=0){
+          this.notice = ""
+          this.quotes.push(quote)
+        }else{
+          // 這部分比較特殊，因為alter是沒有回傳值，只會開啟跳窗
+          // 等於他只是用return跳出func並且利用他執行一個expression
+          this.notice = "Please enter some content for your quote."
+        }
       }
-      this.quotes.push(quote)
     },
     deleteQuote(index){
       // splice可以指定某位址並刪除指定數量
@@ -52,12 +59,7 @@ export default {
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+#app{
+  text-align: left;
 }
 </style>
